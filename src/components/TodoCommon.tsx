@@ -1,4 +1,4 @@
-import { TodoElement } from "../data/interfaces";
+import { TodoElement } from "../model/interfaces";
 
 export const TodoCommon = () => {
   const mockData: TodoElement[] = [

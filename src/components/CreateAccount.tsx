@@ -1,11 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { z } from "zod";
-import useCreateNew from "../hooks/createNew";
 
 export const CreateAccount = () => {
-  const { setCreateNew } = useCreateNew();
+  const navigate = useNavigate();
 
   const [isHidden, setIsHidden] = useState(true);
 
@@ -44,7 +44,7 @@ export const CreateAccount = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="flex flex-col gap-6 h-screen">
+      <div className="flex flex-col gap-6 h-screen bg-gradient-to-b from-blue-400 to-blue-900">
         <h1 className="py-10 top-16 text-center text-white text-4xl font-bold drop-shadow-lg">
           Opprett ny bruker
         </h1>
@@ -113,10 +113,10 @@ export const CreateAccount = () => {
         </div>
         <div className="grid grid-cols-2 justify-items-center gap-8 m-10 h-12">
           <button
-            onClick={() => setCreateNew()}
+            onClick={() => navigate("/login")}
             className="loginbutton border-4 w-32 bg-blue-600 border-blue-800 rounded-full text-white shadow-xl active:shadow-none"
           >
-            Avbryt
+            Tilbake
           </button>
           <button className="loginbutton border-4 w-32 bg-blue-600 border-blue-800 rounded-full text-white shadow-xl active:shadow-none">
             Opprett

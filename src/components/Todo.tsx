@@ -1,4 +1,4 @@
-import { TodoElement } from "../data/interfaces";
+import { TodoElement } from "../model/interfaces";
 
 const mockData: TodoElement[] = [
   {

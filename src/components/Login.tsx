@@ -2,6 +2,7 @@ import { z } from "zod";
 import useCreateNew from "../hooks/createNew";
 import { FieldValues, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Link } from "react-router-dom";
 
 export const Login = () => {
   const loginInfo = z.object({
@@ -19,10 +20,8 @@ export const Login = () => {
     formState: { errors },
   } = useForm<FormData>({ resolver: zodResolver(loginInfo) });
 
-  const { setCreateNew } = useCreateNew();
-
   return (
-    <div className="h-screen">
+    <div className="h-screen bg-gradient-to-b from-blue-400 to-blue-900">
       <form onSubmit={handleSubmit(onsSubmit)}>
         <h1 className="py-10 top-16 text-center text-white text-4xl font-bold drop-shadow-lg">
           Velkommen!
@@ -64,9 +63,9 @@ export const Login = () => {
             </button>
             <div className="text-white text-center pt-2">
               Ingen konto? Opprett en{" "}
-              <a href="#" onClick={() => setCreateNew()} className="underline">
+              <Link to="/createaccount" className="underline">
                 her
-              </a>
+              </Link>
             </div>
           </div>
         </div>
