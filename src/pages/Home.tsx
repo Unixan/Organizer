@@ -1,4 +1,3 @@
-import React from "react";
 import { Content } from "../components/Content";
 import { PrivacyBar } from "../components/PrivacyBar";
 import TopBar from "../components/TopBar";

@@ -1,16 +1,16 @@
-import { z } from "zod";
-import useCreateNew from "../hooks/createNew";
-import { FieldValues, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { FieldValues, useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import { z } from "zod";
+import apiClient from "../services/api-client";
 
 export const Login = () => {
   const loginInfo = z.object({
-    login: z.string().toLowerCase().email({ message: "Ugyldig format" }),
+    accountName: z.string().toLowerCase().email({ message: "Ugyldig format" }),
     password: z.string().min(8, { message: "Passord for kort" }),
   });
 
-  type FormData = z.infer<typeof loginInfo>;
+  type LoginData = z.infer<typeof loginInfo>;
 
   const onsSubmit = (data: FieldValues) => console.log(data);
 
@@ -18,7 +18,9 @@ export const Login = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>({ resolver: zodResolver(loginInfo) });
+  } = useForm<LoginData>({ resolver: zodResolver(loginInfo) });
+
+  apiClient.get("/Users/getUser", data);
 
   return (
     <div className="h-screen bg-gradient-to-b from-blue-400 to-blue-900">
@@ -28,9 +30,9 @@ export const Login = () => {
         </h1>
         <div className="flex flex-col font-bold gap-2 items-center">
           <input
-            {...register("login")}
+            {...register("accountName")}
             className={`rounded-full p-3 h-12 w-4/6 max-w-[250px] ${
-              errors.login
+              errors.accountName
                 ? "border-red-600 border-[5px]"
                 : "border-blue-800 border-4"
             }`}
@@ -40,7 +42,7 @@ export const Login = () => {
             autoComplete="on"
           />
           <p className="text-red-600 h-[24px]">
-            {errors.login ? errors.login.message : ""}
+            {errors.accountName ? errors.accountName.message : ""}
           </p>
           <input
             {...register("password")}
@@ -50,7 +52,7 @@ export const Login = () => {
                 : "border-blue-800 border-4"
             }`}
             id="password"
-            type="text"
+            type="password"
             placeholder="Passord ..."
             autoComplete="off"
           />
