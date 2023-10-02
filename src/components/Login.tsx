@@ -9,7 +9,7 @@ import { useState } from "react";
 
 export const Login = () => {
   const [loginError, setLoginError] = useState("");
-
+  const [isLoading, setIsLoading] = useState(false);
   const { user, setUser } = useCurrentUser();
 
   const loginInfo = z.object({
@@ -21,6 +21,7 @@ export const Login = () => {
 
   const onSubmit = (data: FieldValues) => {
     const { request, cancel } = userService.authUser<User>(data);
+    setIsLoading(true);
     request
       .then((res) => {
         setUser(res.data);
@@ -28,8 +29,10 @@ export const Login = () => {
         if (!res.data) {
           setLoginError("Brukernavn eller passord er feil");
         }
+        setIsLoading(false);
       })
       .catch((err) => {
+        setIsLoading(false);
         console.log(err.message);
       });
 
@@ -57,6 +60,7 @@ export const Login = () => {
                 ? "border-red-600 border-[5px]"
                 : "border-blue-800 border-4"
             }`}
+            onFocus={() => setLoginError("")}
             id="username"
             type="email"
             placeholder="Brukernavn (Email) ..."
@@ -82,8 +86,15 @@ export const Login = () => {
             {errors.password ? errors.password.message : ""}
           </p>
           <div className="flex justify-center flex-col">
-            <button className="loginbutton border-4 w-44 place-self-center h-12 bg-blue-600 border-blue-800 rounded-full text-white">
-              Logg inn
+            <button
+              className={`loginbutton rounded-full text-white border-4 w-44 place-self-center h-12 ${
+                isLoading
+                  ? "bg-gray-600 border-gray-800"
+                  : "bg-blue-600 border-blue-800"
+              } `}
+              disabled={isLoading}
+            >
+              {isLoading ? "Logger inn" : "Logg inn"}
             </button>
             <div className="text-white text-center pt-2">
               Ingen konto? Opprett en{" "}
