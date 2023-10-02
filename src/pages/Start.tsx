@@ -1,5 +1,10 @@
 import { Navigate } from "react-router-dom";
+import useCurrentUser from "../hooks/useCurrentUser";
 
 export const Start = () => {
-  return <Navigate to="/login" />;
+  const { user } = useCurrentUser();
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
+  return <Navigate to="/home" />;
 };

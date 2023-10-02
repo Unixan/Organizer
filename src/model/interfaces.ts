@@ -14,5 +14,4 @@ export interface User {
   id: string;
   screenName: string;
   email: string;
-  password: string;
 }

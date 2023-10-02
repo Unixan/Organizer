@@ -1,10 +1,17 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldValues, useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { z } from "zod";
-import apiClient from "../services/api-client";
+import useCurrentUser from "../hooks/useCurrentUser";
+import { User } from "../model/interfaces";
+import userService from "../services/authUserService";
+import { useState } from "react";
 
 export const Login = () => {
+  const [loginError, setLoginError] = useState("");
+
+  const { user, setUser } = useCurrentUser();
+
   const loginInfo = z.object({
     accountName: z.string().toLowerCase().email({ message: "Ugyldig format" }),
     password: z.string().min(8, { message: "Passord for kort" }),
@@ -12,7 +19,22 @@ export const Login = () => {
 
   type LoginData = z.infer<typeof loginInfo>;
 
-  const onsSubmit = (data: FieldValues) => console.log(data);
+  const onSubmit = (data: FieldValues) => {
+    const { request, cancel } = userService.authUser<User>(data);
+    request
+      .then((res) => {
+        setUser(res.data);
+        setLoginError("");
+        if (!res.data) {
+          setLoginError("Brukernavn eller passord er feil");
+        }
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+
+    return () => cancel();
+  };
 
   const {
     register,
@@ -20,11 +42,10 @@ export const Login = () => {
     formState: { errors },
   } = useForm<LoginData>({ resolver: zodResolver(loginInfo) });
 
-  apiClient.get("/Users/getUser", data);
-
+  if (user) return <Navigate to="/" />;
   return (
     <div className="h-screen bg-gradient-to-b from-blue-400 to-blue-900">
-      <form onSubmit={handleSubmit(onsSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <h1 className="py-10 top-16 text-center text-white text-4xl font-bold drop-shadow-lg">
           Velkommen!
         </h1>
@@ -43,6 +64,7 @@ export const Login = () => {
           />
           <p className="text-red-600 h-[24px]">
             {errors.accountName ? errors.accountName.message : ""}
+            {loginError ? loginError : ""}
           </p>
           <input
             {...register("password")}
