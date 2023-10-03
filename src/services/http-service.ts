@@ -7,12 +7,19 @@ class HttpService {
     this.endpoint = endpoint;
   }
 
-  authUser<T>(data: object) {
+  get<T>(data: object) {
     const controller = new AbortController();
     const request = apiClient.put<T>(this.endpoint, data, {
       signal: controller.signal,
     });
     return { request, cancel: () => controller.abort() };
+  }
+  post<T>(data: object) {
+    const controller = new AbortController();
+    const postUser = apiClient.post<T>(this.endpoint, data, {
+      signal: controller.signal,
+    });
+    return { postUser, cancel: () => controller.abort() };
   }
 }
 

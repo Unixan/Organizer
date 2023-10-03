@@ -3,11 +3,14 @@ import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
+import { newUser } from "../model/interfaces";
+import { createUser } from "../services/apiServices";
 
 export const CreateAccount = () => {
-  const navigate = useNavigate();
-
+  const [loginError, setLoginError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [isHidden, setIsHidden] = useState(true);
+  const navigate = useNavigate();
 
   const newUser = z
     .object({
@@ -32,7 +35,22 @@ export const CreateAccount = () => {
 
   type FormData = z.infer<typeof newUser>;
 
-  const onSubmit = (data: FieldValues) => console.log(data);
+  const onSubmit = (data: FieldValues) => {
+    const user = {
+      screenName: data.screenName,
+      email: data.email,
+      password: data.newPassword,
+    };
+    const { postUser, cancel } = createUser.post<newUser>(user as newUser);
+    setIsLoading(true);
+    postUser
+      .then((res) => {
+        if (res.data) {
+        }
+      })
+      .catch();
+    return () => cancel();
+  };
 
   const {
     register,

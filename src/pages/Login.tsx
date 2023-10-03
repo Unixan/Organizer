@@ -4,8 +4,9 @@ import { Link, Navigate } from "react-router-dom";
 import { z } from "zod";
 import useCurrentUser from "../hooks/useCurrentUser";
 import { User } from "../model/interfaces";
-import userService from "../services/authUserService";
+
 import { useState } from "react";
+import { getUser } from "../services/apiServices";
 
 export const Login = () => {
   const [loginError, setLoginError] = useState("");
@@ -20,7 +21,7 @@ export const Login = () => {
   type LoginData = z.infer<typeof loginInfo>;
 
   const onSubmit = (data: FieldValues) => {
-    const { request, cancel } = userService.authUser<User>(data);
+    const { request, cancel } = getUser.get<User>(data);
     setIsLoading(true);
     request
       .then((res) => {
@@ -32,8 +33,8 @@ export const Login = () => {
         setIsLoading(false);
       })
       .catch((err) => {
+        setLoginError(err.message);
         setIsLoading(false);
-        console.log(err.message);
       });
 
     return () => cancel();

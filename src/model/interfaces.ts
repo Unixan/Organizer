@@ -15,3 +15,9 @@ export interface User {
   screenName: string;
   email: string;
 }
+
+export interface newUser {
+  screenName: string;
+  email: string;
+  password: string;
+}
