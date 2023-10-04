@@ -1,12 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { z } from "zod";
-import { newUser } from "../model/interfaces";
+import { User, newUser } from "../model/interfaces";
 import { createUser } from "../services/apiServices";
+import useCurrentUser from "../hooks/useCurrentUser";
 
 export const CreateAccount = () => {
+  const { user, setUser } = useCurrentUser();
   const [loginError, setLoginError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isHidden, setIsHidden] = useState(true);
@@ -41,14 +43,21 @@ export const CreateAccount = () => {
       email: data.email,
       password: data.newPassword,
     };
-    const { postUser, cancel } = createUser.post<newUser>(user as newUser);
+    const { postUser, cancel } = createUser.post<User>(user as newUser);
     setIsLoading(true);
     postUser
       .then((res) => {
         if (res.data) {
+          setUser(res.data);
+        } else {
+          setLoginError("Email finnes fra før");
         }
+        setIsLoading(false);
       })
-      .catch();
+      .catch((err) => {
+        setLoginError(err.message);
+        setIsLoading(false);
+      });
     return () => cancel();
   };
 
@@ -59,7 +68,7 @@ export const CreateAccount = () => {
   } = useForm<FormData>({
     resolver: zodResolver(newUser),
   });
-
+  if (user) return <Navigate to="/" />;
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-6 h-screen bg-gradient-to-b from-blue-400 to-blue-900">
@@ -74,6 +83,7 @@ export const CreateAccount = () => {
                 ? "border-red-600 border-[5px]"
                 : "border-blue-800 border-4"
             }`}
+            onFocus={() => setLoginError("")}
             id="Email"
             type="text"
             placeholder="E-mail adresse ..."
@@ -82,6 +92,7 @@ export const CreateAccount = () => {
 
           <p className="text-red-600 h-[24px]">
             {errors.email ? errors.email.message : ""}
+            {loginError ? loginError : ""}
           </p>
           <input
             {...register("screenName")}
@@ -132,11 +143,23 @@ export const CreateAccount = () => {
         <div className="grid grid-cols-2 justify-items-center gap-8 m-10 h-12">
           <button
             onClick={() => navigate("/login")}
-            className="loginbutton border-4 w-32 bg-blue-600 border-blue-800 rounded-full text-white shadow-xl active:shadow-none"
+            className={`loginbutton rounded-full text-white border-4 w-44 place-self-center h-12 ${
+              isLoading
+                ? "bg-gray-600 border-gray-800"
+                : "bg-blue-600 border-blue-800"
+            } `}
+            disabled={isLoading}
           >
             Tilbake
           </button>
-          <button className="loginbutton border-4 w-32 bg-blue-600 border-blue-800 rounded-full text-white shadow-xl active:shadow-none">
+          <button
+            className={`loginbutton rounded-full text-white border-4 w-44 place-self-center h-12 ${
+              isLoading
+                ? "bg-gray-600 border-gray-800"
+                : "bg-blue-600 border-blue-800"
+            } `}
+            disabled={isLoading}
+          >
             Opprett
           </button>
         </div>
