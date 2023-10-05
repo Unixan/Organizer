@@ -2,22 +2,40 @@ import { useState } from "react";
 import { HiOutlineMenu } from "react-icons/Hi";
 import { IoCloseSharp } from "react-icons/io5";
 import defaultuser from "../assets/DefaultUser.png";
+import useCurrentUser from "../hooks/useCurrentUser";
+import { useNavigate } from "react-router-dom";
+import LogoutModal from "./modals/logoutModal";
 
 const TopBar = () => {
   const [IsOpen, setIsOpen] = useState(false);
+  const [logoutModal, setLogoutModal] = useState(false);
+  const { user, clearUser } = useCurrentUser();
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    setLogoutModal(true);
+  };
 
+  const handleConfirmLogout = (value: boolean) => {
+    if (value) {
+      setLogoutModal(false);
+      clearUser();
+      navigate("/");
+    }
+    setLogoutModal(false);
+  };
   const menuAction = () => {
     setIsOpen(!IsOpen);
   };
 
   return (
     <>
+      {logoutModal && <LogoutModal logout={handleConfirmLogout} />}
       <nav className="h-[50px] relative bg-sky-950 text-white flex justify-between text-xl font-bold z-20">
         <div className="p-2 flex items-center">
           <div className="rounded-full border-sky-400 h-[40px] w-[40px] border-2 overflow-hidden pt-1">
             <img src={defaultuser} alt="Test" />
           </div>
-          <div className="p-2">Brukernavn</div>
+          <div className="p-2">{user ? user.screenName : "Ingen Bruker"}</div>
         </div>
         <div
           className="flex pr-3 items-center w-12 text-5xl md:hover:text-6xl justify-center duration-150 z-20"
@@ -45,7 +63,9 @@ const TopBar = () => {
             <a href="#">MenuItem 4</a>
           </li>
           <li className="flex w-full justify-end p-3 px-10">
-            <a href="#">Logg ut</a>
+            <a href="#" onClick={handleLogout}>
+              Logg ut
+            </a>
           </li>
         </ul>
       </div>
